@@ -17,12 +17,13 @@ public:
     RPN(const RPN &other);
     RPN &operator=(const RPN &other);
     void check_expression();
-    void pushOperand(double num) {
-        // Push the operand onto the stack
+    int is_op(std::string op);
+    void pushOperand(double num) 
+    {
         stack.push(num);
     }
-    void pushOperator(const std::string& op) {
-        // Perform operation and push result back to the stack
+    void pushOperator(const std::string& op) 
+    {
         double operand2 = stack.top();
         stack.pop();
         double operand1 = stack.top();

@@ -28,7 +28,8 @@ std::vector<std::string> splitString(const std::string& str) {
     std::vector<std::string> tokens;
     std::stringstream ss(str);
     std::string token;
-    while (ss >> token) {
+    while (ss >> token) 
+    {
         tokens.push_back(token);
     }
     return tokens;
@@ -37,7 +38,12 @@ RPN::RPN(const std::string &numbers)
 {
     this->data = splitString(numbers);
 }
-
+int  RPN::is_op(std::string op)
+{
+    if((op == "+" || op == "-" || op == "*" || op == "/"  )&& (op.size() == 1) )
+        return (1);
+    return (0);
+}
 void RPN::check_expression()
 {
     int number_counter = 0;
@@ -46,7 +52,7 @@ void RPN::check_expression()
         std::vector<std::string>::iterator it = this->data.begin();
         while (it != this->data.end())
         {
-            if((*it == "+" || *it == "-" || *it == "*" || *it == "/" )&& (it->size() == 1))
+            if(is_op(*it) && ((*(it + 1) == "" || this->is_op(*(it++)))))
                 operator_counter++;
             else if(std::isdigit((*it)[0]) || ((*it)[0] == '-' && std::isdigit((*it)[1])))
                 number_counter++;
@@ -61,27 +67,35 @@ void RPN::check_expression()
 
 
 
-void RPN::calculate() {
+void RPN::calculate() 
+{
     std::vector<std::string>::iterator it = data.begin();
-    while (it != data.end()) {
+    while (it != data.end()) 
+    {
         const std::string& token = *it;
-        if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
+        if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) 
+        {
             double num = atof(token.c_str());
             stack.push(num);
-        } else {
+        } 
+        else 
+        {
             try {
                 pushOperator(token);
-            } catch(const std::runtime_error& e) {
+            } 
+            catch(const std::runtime_error& e) 
+            {
                 std::cerr << "Error: " << e.what() << std::endl;
                 return;
             }
         }
         ++it;
     }
-    if (!stack.empty()) {
+    if (!stack.empty()) 
+    {
         double result = stack.top();
         std::cout << "Result: " << result << std::endl;
-    } else {
+    } 
+    else 
         std::cerr << "Error: Empty expression" << std::endl;
-    }
 }
