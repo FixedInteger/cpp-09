@@ -24,52 +24,64 @@ RPN &RPN::operator=(const RPN &other)
 }
 
 
+std::vector<std::string> splitString(const std::string& str) {
+    std::vector<std::string> tokens;
+    std::stringstream ss(str);
+    std::string token;
+    while (ss >> token) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
 RPN::RPN(const std::string &numbers)
 {
-    std::stringstream ss;
-    ss << numbers;
-    std::string token;
-    while(std::getline(ss, token, ' '))
-    {
-        if(token.size() == 0)
-            continue;
-        std::stringstream ss2;
-        ss2 << token;
-        double number;
-        ss2 >> number;
-        this->data.insert(token);
-    }
-
+    this->data = splitString(numbers);
 }
 
 void RPN::check_expression()
 {
-    std::set<std::string>::iterator it;
-    int number_count = 0;
-    int operator_count = 0;
-    for(it = this->data.begin(); it != this->data.end(); it++)
-    {
-        std::string token = *it;
-        if(token.size() == 0)
-            continue;
-        if(token.size() == 1 && !isdigit(token[0]))
+    int number_counter = 0;
+    int operator_counter = 0;
+    
+        std::vector<std::string>::iterator it = this->data.begin();
+        while (it != this->data.end())
         {
-            if(token[0] != '+' && token[0] != '-' && token[0] != '*' && token[0] != '/')
-                throw ExpressionError();
-            operator_count++;
+            if((*it == "+" || *it == "-" || *it == "*" || *it == "/" )&& (it->size() == 1))
+                operator_counter++;
+            else if(std::isdigit((*it)[0]) || ((*it)[0] == '-' && std::isdigit((*it)[1])))
+                number_counter++;
+            else
+                throw RPN::ExpressionError();
+            it++;
         }
-        else
-        {
-            std::stringstream ss;
-            ss << token;
-            double number;
-            ss >> number;
-            if(ss.fail())
-                throw ExpressionError();
-            number_count++;
+        if(number_counter - operator_counter != 1)
+            throw RPN::ExpressionError();
+    // this->calculate();
+}
+
+
+
+void RPN::calculate() {
+    std::vector<std::string>::iterator it = data.begin();
+    while (it != data.end()) {
+        const std::string& token = *it;
+        if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
+            double num = atof(token.c_str());
+            stack.push(num);
+        } else {
+            try {
+                pushOperator(token);
+            } catch(const std::runtime_error& e) {
+                std::cerr << "Error: " << e.what() << std::endl;
+                return;
+            }
         }
+        ++it;
     }
-    if(number_count - operator_count != 1)
-        throw ExpressionError();
-   
+    if (!stack.empty()) {
+        double result = stack.top();
+        std::cout << "Result: " << result << std::endl;
+    } else {
+        std::cerr << "Error: Empty expression" << std::endl;
+    }
 }
