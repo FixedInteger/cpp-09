@@ -23,84 +23,53 @@ RPN &RPN::operator=(const RPN &other)
     return *this;
 }
 
-void RPN::check_expression(const std::string &expression)
+
+RPN::RPN(const std::string &numbers)
 {
     std::stringstream ss;
-    ss << expression;
+    ss << numbers;
     std::string token;
-    while(ss >> token)
+    while(std::getline(ss, token, ' '))
     {
+        if(token.size() == 0)
+            continue;
+        std::stringstream ss2;
+        ss2 << token;
+        double number;
+        ss2 >> number;
+        this->data.insert(token);
+    }
+
+}
+
+void RPN::check_expression()
+{
+    std::set<std::string>::iterator it;
+    int number_count = 0;
+    int operator_count = 0;
+    for(it = this->data.begin(); it != this->data.end(); it++)
+    {
+        std::string token = *it;
+        if(token.size() == 0)
+            continue;
         if(token.size() == 1 && !isdigit(token[0]))
         {
             if(token[0] != '+' && token[0] != '-' && token[0] != '*' && token[0] != '/')
                 throw ExpressionError();
+            operator_count++;
         }
         else
         {
-            for(size_t i = 0; i < token.size(); i++)
-            {
-                if(!isdigit(token[i]) && token[i] != '.')
-                    throw ExpressionError();
-            }
+            std::stringstream ss;
+            ss << token;
+            double number;
+            ss >> number;
+            if(ss.fail())
+                throw ExpressionError();
+            number_count++;
         }
     }
-}
-
-RPN::RPN(const std::string &number)
-{
-    check_expression(number);
-    check_file(number);
-    std::ifstream file(number);
-    std::string line;
-    while(std::getline(file, line))
-    {
-        data.insert(line);
-    }
-    file.close();
-}
-
-
-//calculate
-void RPN::calculate()
-{
-    std::set<std::string>::iterator it;
-    for(it = data.begin(); it != data.end(); it++)
-    {
-        std::stringstream ss;
-        ss << *it;
-        std::string token;
-        while(ss >> token)
-        {
-            if(token.size() == 1 && !isdigit(token[0]))
-            {
-                double a = stack.top();
-                stack.pop();
-                double b = stack.top();
-                stack.pop();
-                if(token[0] == '+')
-                    stack.push(b + a);
-                else if(token[0] == '-')
-                    stack.push(b - a);
-                else if(token[0] == '*')
-                    stack.push(b * a);
-                else if(token[0] == '/')
-                    stack.push(b / a);
-            }
-            else
-            {
-                stack.push(std::stod(token));
-            }
-        }
-        std::cout << stack.top() << std::endl;
-        stack.pop();
-    }
-}
-
-
-void RPN::check_file(const std::string &filename)
-{
-    std::ifstream file(filename);
-    if(!file.is_open())
-        throw FileError();
-    file.close();
+    if(number_count - operator_count != 1)
+        throw ExpressionError();
+   
 }

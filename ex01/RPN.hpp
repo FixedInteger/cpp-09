@@ -16,9 +16,9 @@ class RPN
         ~RPN();
         RPN(const RPN &other);
         RPN &operator=(const RPN &other);
-        void check_expression(const std::string &expression);
+        void check_expression();
         void check_file(const std::string &filename);
-        RPN(const std::string &filename);
+        RPN(const std::string &numbers);
         void calculate();
         class FileError : public std::exception
         {

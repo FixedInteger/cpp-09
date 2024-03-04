@@ -10,6 +10,7 @@ int main(int argc, char **argv)
     try
     {
         RPN rpn(argv[1]);
+        rpn.check_expression();
     }
     catch(const std::exception &e)
     {
