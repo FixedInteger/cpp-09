@@ -26,6 +26,7 @@ class BitcoinExchange
         void parseData(const std::string &line);
         void check_date(const std::string &date);
         void check_file(const std::string &filename);
+        void check_data(const std::string &data);
 
         class FileError : public std::exception
         {

@@ -14,11 +14,10 @@ int main(int ac , char **av)
             std::cout << "Press enter to continue :" << std::endl;
             std::string date;
             std::string filename;
-            std::cout << "Enter the date in the format YYYY-MM-DD" << std::endl;
-            std::getline(std::cin, date);
             std::cout << "Enter the filename" << std::endl;
             std::getline(std::cin, filename);
-            BitcoinExchange exchange(filename, date);
+            BitcoinExchange exchange(filename);
+            exchange.readData(filename);
         }
     }
     catch(const std::exception& e)

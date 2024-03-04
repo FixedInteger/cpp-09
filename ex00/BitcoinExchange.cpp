@@ -49,16 +49,18 @@ void BitcoinExchange::check_date(const std::string &date)
     }
 }
 
-BitcoinExchange::BitcoinExchange(const std::string &filename, const std::string &date)
+void BitcoinExchange::check_file(const std::string &filename)
 {
-    this->check_date(date);
-    
-    this->filename = filename;
-    this->date = date;
-    
-    
-    
+    std::ifstream file(filename);
+    if(!file.is_open())
+        throw FileError();
+    file.close();
 }
+BitcoinExchange::BitcoinExchange(const std::string &filename)
+{
+    this->filename = filename;
+}
+
 
 //exception classes
 const char *BitcoinExchange::FileError::what() const throw()
@@ -80,18 +82,30 @@ const char *BitcoinExchange::DataError::what() const throw()
     return "DataError: data is empty";
 }
 
+void BitcoinExchange::check_data(const std::string &data)
+{
+    int value = std::stoi(data);
+    if(value < 0)
+        throw DataError();
+    if(data != std::to_string(value))
+    {
+        std::cout << "DataError: " << data << " " << std::to_string(value) << std::endl;
+        throw DataError();
+    }
+}
+
 void BitcoinExchange::parseData(const std::string &line)
 {
     std::cout << "Parsing data: " << line << std::endl;
-    try
+    std::stringstream ss;
+    ss << line;
+    std::string date;
+    std::string data;
+    while (std::getline(ss, date, ','))
     {
-        std::string date = line.substr(0, line.find(","));
-        std::string price = line.substr(line.find(",") + 1, line.length());
-        std::cout << "Date: " << date << " Price: " << price << std::endl;
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
+        std::getline(ss, data, ',');
+        this->check_date(date);
+        // this->check_data(data);
     }
     
 }
@@ -101,10 +115,7 @@ void BitcoinExchange::readData(const std::string &filename)
     std::ifstream
     file(filename);
     if (!file.is_open())
-    {
-        std::cerr << "Error: could not open file " << filename << std::endl;
-        return;
-    }
+        throw FileError();
     std::string line;
 
     while (std::getline(file, line))
