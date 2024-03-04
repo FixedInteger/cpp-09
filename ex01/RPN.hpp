@@ -24,6 +24,8 @@ public:
     }
     void pushOperator(const std::string& op) 
     {
+        if (stack.size() < 2) 
+            throw std::runtime_error("Invalid expression: Operator encountered without enough operands");
         double operand2 = stack.top();
         stack.pop();
         double operand1 = stack.top();

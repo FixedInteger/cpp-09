@@ -52,7 +52,7 @@ void RPN::check_expression()
         std::vector<std::string>::iterator it = this->data.begin();
         while (it != this->data.end())
         {
-            if(is_op(*it) && ((*(it + 1) == "" || this->is_op(*(it++)))))
+            if(is_op(*it))
                 operator_counter++;
             else if(std::isdigit((*it)[0]) || ((*it)[0] == '-' && std::isdigit((*it)[1])))
                 number_counter++;
