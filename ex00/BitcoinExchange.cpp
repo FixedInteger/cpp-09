@@ -84,14 +84,15 @@ const char *BitcoinExchange::DataError::what() const throw()
 
 void BitcoinExchange::check_data(const std::string &data)
 {
-    int value = std::stoi(data);
-    if(value < 0)
+    std::stringstream ss;
+    ss << data;
+    float value;
+    ss >> value;
+
+    if(value < 0 || value > 1000)
         throw DataError();
-    if(data != std::to_string(value))
-    {
-        std::cout << "DataError: " << data << " " << std::to_string(value) << std::endl;
+    if(ss.fail())
         throw DataError();
-    }
 }
 
 void BitcoinExchange::parseData(const std::string &line)
@@ -105,7 +106,7 @@ void BitcoinExchange::parseData(const std::string &line)
     {
         std::getline(ss, data, ',');
         this->check_date(date);
-        // this->check_data(data);
+        this->check_data(data);
     }
     
 }
