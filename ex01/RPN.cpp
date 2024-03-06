@@ -16,6 +16,16 @@ RPN::RPN(const RPN &other)
     this->data = other.data;
 }
 
+const char *RPN::FileError::what() const throw()
+{
+    return "FileError";
+}
+
+const char *RPN::ExpressionError::what() const throw()
+{
+    return "ExpressionError";
+}
+
 RPN &RPN::operator=(const RPN &other)
 {
     std::cout << "RPN operator=" << std::endl;
@@ -23,7 +33,34 @@ RPN &RPN::operator=(const RPN &other)
     return *this;
 }
 
+void RPN::pushOperand(double num) 
+{
+    stack.push(num);
+}
 
+void RPN::pushOperator(const std::string& op) 
+
+  {
+    if (stack.size() < 2) 
+            throw std::runtime_error("Invalid expression");
+        double operand2 = stack.top();
+        stack.pop();
+        double operand1 = stack.top();
+        stack.pop();
+        double result;
+        if (op == "+")
+            result = operand1 + operand2;
+        else if (op == "-")
+            result = operand1 - operand2;
+        else if (op == "*")
+            result = operand1 * operand2;
+        else if (op == "/") {
+            if (operand2 == 0)
+                throw std::runtime_error("Division by zero");
+            result = operand1 / operand2;
+        }
+        stack.push(result);
+}
 std::vector<std::string> splitString(const std::string& str) {
     std::vector<std::string> tokens;
     std::stringstream ss(str);
