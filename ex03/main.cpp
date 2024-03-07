@@ -67,18 +67,24 @@ std::list<std::pair<int, int> > pmerge(const std::list<int>& numbers)
     return res;
 }
 
-void recursion_sort(std::list<std::pair<int,int> > o)
+void recursion_sort(std::list<std::pair<int,int> > &o)
 {
-    std::list<std::pair<int,int> >::iterator it;
-    for(it = o.begin(); it != o.end(); it++)
+    std::list<std::pair<int,int> >::iterator it = o.begin();
+
+    while(it != std::prev(o.end()))
     {
-        if(it->first > std::next(it)->first)
+        
+        if(it->first < std::next(it)->first )
         {
             std::pair<int,int> temp = *it;
             *it = *std::next(it);
             *std::next(it) = temp;
+            it = o.begin();
         }
+
+        it++;
     }
+    
 }
 int main(int argc, char *argv[]) {
     try {
