@@ -8,7 +8,7 @@ class NotANumber : public std::exception
 public:
     const char *what() const throw()
     {
-        return "Not a number exception";
+        return "Error: Not a number.";
     }
 };
 
@@ -33,6 +33,11 @@ bool isDigit(const std::string &str)
     return true;
 }
 
+template<typename T>
+typename std::vector<T>::iterator operator+(typename std::vector<T>::iterator it, int n) {
+    std::advance(it, n);
+    return it;
+}
 
 std::list<int> parseArguments(int argc, char *argv[])
 {
@@ -47,37 +52,45 @@ std::list<int> parseArguments(int argc, char *argv[])
 
     return numList;
 }
-std::list<std::pair<int, int> > pmerge(const std::list<int>& numbers) 
-{
+
+std::list<std::pair<int, int> > pmerge(const std::list<int>& numbers) {
     std::list<std::pair<int, int> > res;
 
     std::list<int>::const_iterator it = numbers.begin();
-    while (it != numbers.end())
-	{
-		if(*it > *std::next(it))
-		{
-			res.push_back(std::make_pair(*std::next(it),*it));
-		}
-		else
-			res.push_back(std::make_pair(*it,(*std::next(it))));
-		std::advance(it,2);
-
+    while (it != numbers.end()) {
+        std::list<int>::const_iterator next_it = it;
+        if (++next_it != numbers.end()) {
+            if (*it > *next_it) {
+                res.push_back(std::make_pair(*next_it, *it));
+            } else {
+                res.push_back(std::make_pair(*it, *next_it));
+            }
+        }
+        std::advance(it, 2);
     }
 
     return res;
 }
 
-void recursion_sort(std::list<std::pair<int,int> > &o)
-{
-    std::list<std::pair<int,int> >::iterator it = o.begin();
-    while(it != std::prev(o.end()))
-    {
-        if(it->first < std::next(it)->first)
-           std::swap(it->first,std::next(it)->first);
-        it++;
-    }
+
+void recursion_sort_helper(std::list<std::pair<int,int> >& o, std::list<std::pair<int,int> >::iterator it) {
+    if (it == std::prev(o.end()))
+        return;
     
+    if (it->second > std::next(it)->second) 
+    {
+        std::swap(*it, *std::next(it));
+        recursion_sort_helper(o, o.begin()); 
+    } 
+    else
+        recursion_sort_helper(o, std::next(it));
+
 }
+
+void recursion_sort(std::list<std::pair<int,int> >& o) {
+    recursion_sort_helper(o, o.begin());
+}
+
 int main(int argc, char *argv[]) {
     try {
         if (argc <= 1) 
@@ -94,10 +107,40 @@ int main(int argc, char *argv[]) {
         std::list<std::pair<int, int> > pairs = pmerge(numbers);
         recursion_sort(pairs);
         std::list<std::pair<int, int> >::iterator it3;
+        std::list<int> lkbar;
+        std::list<int> sghar;
 		for(it3 = pairs.begin() ; it3 != pairs.end(); it3++)
         {
-            std::cout << it3->first << " " << it3->second << std::endl;
+            lkbar.push_back(it3->second);
+            sghar.push_back(it3->first);
         }
+        //now we have two lists of the same size lkbar == sorted numbers and sghar == unsorted numbers
+        if(*(lkbar.begin()) >= *(sghar.begin()))
+        {
+            lkbar.push_front(*(sghar.begin()));
+            sghar.pop_front();
+        }
+
+        //now generate the jacob number based on sghar 's size
+       
+        it = lkbar.begin();
+        std::cout<<"lkbar : "<<std::endl;
+        std::cout << "--------"<<std::endl;
+        while(it != lkbar.end())
+        {
+            std::cout<<*it<<" "<<std::endl;
+            it++;
+        }
+
+        std::cout<<"sghar : "<<std::endl;
+        std::cout << "--------"<<std::endl;
+        it = sghar.begin();
+        while(it != sghar.end())
+        {
+            std::cout<<*it<<" ";
+            it++;
+        }
+        
     }
     catch (std::exception &e) 
 	{
