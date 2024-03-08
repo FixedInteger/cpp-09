@@ -21,6 +21,14 @@ class BadParamters : public std::exception
     
     }
 };
+class sorted : public std::exception
+{
+    public :
+    const char *what() const throw()
+    {
+        return "The list is already sorted";
+    }
+};
 
 bool isDigit(const std::string &str)
 {
@@ -108,7 +116,7 @@ int main(int argc, char *argv[])
         
         std::list<int> numbers = parseArguments(argc, argv);
         if(check_sort(numbers) == 1)
-            throw BadParamters();
+            throw sorted();
 		std::list<int> ::iterator it = numbers.begin();
 		if(numbers.size() % 2 != 0)
 		{
@@ -151,18 +159,6 @@ int main(int argc, char *argv[])
         }
 
         //step 6 : push the strugller to it s right place
-        if(strugller )
-        {        std::list<int>::iterator it5 = lkbar.begin();
-            while(it5 != lkbar.end())
-            {
-                if(*it5 > strugller)
-                {
-                    lkbar.insert(it5,strugller);
-                    break;
-                }
-                it5++;
-            }
-        }
         //step 7 : print the result       
         it = lkbar.begin();
         std::cout<<"lkbar : "<<std::endl;
