@@ -33,11 +33,6 @@ bool isDigit(const std::string &str)
     return true;
 }
 
-template<typename T>
-typename std::vector<T>::iterator operator+(typename std::vector<T>::iterator it, int n) {
-    std::advance(it, n);
-    return it;
-}
 
 std::list<int> parseArguments(int argc, char *argv[])
 {
@@ -53,7 +48,8 @@ std::list<int> parseArguments(int argc, char *argv[])
     return numList;
 }
 
-std::list<std::pair<int, int> > pmerge(const std::list<int>& numbers) {
+std::list<std::pair<int, int> > pmerge(const std::list<int>& numbers) 
+{
     std::list<std::pair<int, int> > res;
 
     std::list<int>::const_iterator it = numbers.begin();
@@ -86,21 +82,37 @@ void recursion_sort_helper(std::list<std::pair<int,int> >& o, std::list<std::pai
         recursion_sort_helper(o, std::next(it));
 
 }
+int check_sort(std::list<int> &o)
+{
+    std::list<int>::iterator it = o.begin();
+    while(it != std::prev(o.end()))
+    {
+        if(*it > *std::next(it))
+            return 0;
+        it++;
+    }
+    return 1;
+}
 
 void recursion_sort(std::list<std::pair<int,int> >& o) {
     recursion_sort_helper(o, o.begin());
 }
 
-int main(int argc, char *argv[]) {
-    try {
+int main(int argc, char *argv[]) 
+{
+    try 
+    {
+        int strugller;
         if (argc <= 1) 
             throw BadParamters();
         
         std::list<int> numbers = parseArguments(argc, argv);
+        if(check_sort(numbers) == 1)
+            throw BadParamters();
 		std::list<int> ::iterator it = numbers.begin();
 		if(numbers.size() % 2 != 0)
 		{
-			int strugller = *it;
+			strugller = *it;
 			numbers.pop_front();
 			std::cout<<"strugller "<<strugller<<std::endl;
 		}
@@ -114,15 +126,44 @@ int main(int argc, char *argv[]) {
             lkbar.push_back(it3->second);
             sghar.push_back(it3->first);
         }
+        //step 4 
         //now we have two lists of the same size lkbar == sorted numbers and sghar == unsorted numbers
         if(*(lkbar.begin()) >= *(sghar.begin()))
         {
             lkbar.push_front(*(sghar.begin()));
             sghar.pop_front();
         }
+        //step 5 : generate the order  of the jacob numbers based on the unsorded list ' s size
+        std::list<int>::iterator it2 = sghar.begin();
+        while(it2 != sghar.end())
+        {
+            std::list<int>::iterator it4 = lkbar.begin();
+            while(it4 != lkbar.end())
+            {
+                if(*it2 < *it4)
+                {
+                    lkbar.insert(it4,*it2);
+                    break;
+                }
+                it4++;
+            }
+            it2++;
+        }
 
-        //now generate the jacob number based on sghar 's size
-       
+        //step 6 : push the strugller to it s right place
+        if(strugller )
+        {        std::list<int>::iterator it5 = lkbar.begin();
+            while(it5 != lkbar.end())
+            {
+                if(*it5 > strugller)
+                {
+                    lkbar.insert(it5,strugller);
+                    break;
+                }
+                it5++;
+            }
+        }
+        //step 7 : print the result       
         it = lkbar.begin();
         std::cout<<"lkbar : "<<std::endl;
         std::cout << "--------"<<std::endl;
@@ -132,14 +173,14 @@ int main(int argc, char *argv[]) {
             it++;
         }
 
-        std::cout<<"sghar : "<<std::endl;
-        std::cout << "--------"<<std::endl;
-        it = sghar.begin();
-        while(it != sghar.end())
-        {
-            std::cout<<*it<<" ";
-            it++;
-        }
+        // std::cout<<"sghar : "<<std::endl;
+        // std::cout << "--------"<<std::endl;
+        // it = sghar.begin();
+        // while(it != sghar.end())
+        // {
+        //     std::cout<<*it<<" ";
+        //     it++;
+        // }
         
     }
     catch (std::exception &e) 
