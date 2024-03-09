@@ -194,26 +194,36 @@ int main(int argc, char *argv[])
         
         std::list<int> jacob_numbers;
         jacob_numbers = generateJacobsthalSequence(sghar.size() );
-        std::list<int>::iterator s_it = jacob_numbers.begin();
-        
-            while(s_it != jacob_numbers.end())
-            {
-                std::cout<<*s_it<<std::endl;
-                s_it++;
-            }
-            
+        // std::list<int>::iterator s_it = jacob_numbers.begin();
+        std::cout<<"sghar : "<<std::endl;
+        std::cout << "--------"<<std::endl;
+        it = sghar.begin();
+        while(it != sghar.end())
+        {
+            std::cout<<*it<<std::endl;
+            it++;
+        }
+        std::cout << "--------"<<std::endl;
 
-        // // std::list<int>::iterator s_it = jacob_numbers.begin();
-        // std::cout<<"sghar : "<<std::endl;
-        // std::cout << "--------"<<std::endl;
-        // std::cout << "--------"<<std::endl;
-        // std::cout << "--------"<<std::endl;
-        // it = sghar.begin();
-        // while(it != sghar.end())
-        // {
-        //     std::cout<<*it<<std::endl;
-        //     it++;
-        // }
+        std::list<int> sorted_numbers;
+        it = jacob_numbers.begin();
+        while(it != jacob_numbers.end())
+        {
+            int position = *it -1;
+            std::list<int>::iterator it2 = sghar.begin();
+            std::advance(it2, position);
+            sorted_numbers.push_back(*it2);
+            it++;
+        }
+        std::cout << "--------"<<std::endl;
+        std::cout << "--------"<<std::endl;
+        std::cout << "sorted"<<std::endl;
+        it = sorted_numbers.begin();
+        while(it != sorted_numbers.end())
+        {
+            std::cout<<*it<<std::endl;
+            it++;
+        }
         // if((size_t)*jacob_numbers.end() < sghar.size())
         // {
         //     jacob_numbers.pop_back();
