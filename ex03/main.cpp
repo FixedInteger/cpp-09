@@ -112,6 +112,48 @@ int check_sort(std::list<int> &o)
 }
 
 
+
+
+std::list<int> generateJacobsthalSequence(int n)
+{
+    std::list<int> jacob_numbers;
+    int a = 0;
+    int b = 1;
+    int c;
+    for (int i = 0; i < n; i++)
+    {
+        if (i == 0)
+            jacob_numbers.push_back(a);
+        else if (i == 1)
+            jacob_numbers.push_back(b);
+        else
+        {
+            c = a;
+            a = b;
+            b = b + 2 * c;
+            jacob_numbers.push_back(b);
+        }
+        if(b >= n)
+            break;
+
+    }
+    if(n >= 2)
+    {
+        jacob_numbers.pop_front();
+        jacob_numbers.pop_front(); 
+    }
+    if(jacob_numbers.back() != n)
+    {
+        jacob_numbers.pop_back();
+        jacob_numbers.push_back(n);
+    }
+    return jacob_numbers;
+}
+
+
+
+
+
 int main(int argc, char *argv[]) 
 {
     try 
@@ -150,28 +192,54 @@ int main(int argc, char *argv[])
         }
         //step 5 : generate the order  of the jacob numbers based on the unsorded list ' s size
         
-        sghar.sort();
-        lkbar.merge(sghar);
-        sghar.sort();
+        std::list<int> jacob_numbers;
+        jacob_numbers = generateJacobsthalSequence(sghar.size() );
+        std::list<int>::iterator s_it = jacob_numbers.begin();
+        
+            while(s_it != jacob_numbers.end())
+            {
+                std::cout<<*s_it<<std::endl;
+                s_it++;
+            }
+            
+
+        // // std::list<int>::iterator s_it = jacob_numbers.begin();
+        // std::cout<<"sghar : "<<std::endl;
+        // std::cout << "--------"<<std::endl;
+        // std::cout << "--------"<<std::endl;
+        // std::cout << "--------"<<std::endl;
+        // it = sghar.begin();
+        // while(it != sghar.end())
+        // {
+        //     std::cout<<*it<<std::endl;
+        //     it++;
+        // }
+        // if((size_t)*jacob_numbers.end() < sghar.size())
+        // {
+        //     jacob_numbers.pop_back();
+        //     jacob_numbers.push_back(sghar.size());
+        // }
+        // std::cout << "--------"<<std::endl;
+        // std::cout << "--------"<<std::endl;
+        // std::cout << "--------"<<std::endl;
+
+        // while(s_it != jacob_numbers.end())
+        // {
+        //    std::cout<<*s_it<<std::endl;
+        //     s_it++;
+        // }
+
         //step 6 : push the strugller to it s right place
         //step 7 : print the result       
-        it = lkbar.begin();
-        std::cout<<"lkbar : "<<std::endl;
-        std::cout << "--------"<<std::endl;
-        while(it != lkbar.end())
-        {
-            std::cout<<*it<<" "<<std::endl;
-            it++;
-        }
+        // it = lkbar.begin();
+        // std::cout<<"lkbar : "<<std::endl;
+        // std::cout << "--------"<<std::endl;
+        // while(it != lkbar.end())
+        // {
+        //     std::cout<<*it<<" "<<std::endl;
+        //     it++;
+        // }
 
-        std::cout<<"sghar : "<<std::endl;
-        std::cout << "--------"<<std::endl;
-        it = sghar.begin();
-        while(it != sghar.end())
-        {
-            std::cout<<*it<<" ";
-            it++;
-        }
         
     }
     catch (std::exception &e) 
