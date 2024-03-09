@@ -77,19 +77,28 @@ std::list<std::pair<int, int> > pmerge(const std::list<int>& numbers)
 }
 
 
-void recursion_sort_helper(std::list<std::pair<int,int> >& o, std::list<std::pair<int,int> >::iterator it) {
+void recursion_sort_helper(std::list<std::pair<int,int> >& o, std::list<std::pair<int,int> >::iterator it) 
+{
     if (it == std::prev(o.end()))
         return;
     
     if (it->second > std::next(it)->second) 
     {
         std::swap(*it, *std::next(it));
-        recursion_sort_helper(o, o.begin()); 
+        recursion_sort_helper(o, std::next(it)); // Pass the next iterator
     } 
     else
-        recursion_sort_helper(o, std::next(it));
-
+        recursion_sort_helper(o, std::next(it)); // Pass the next iterator
 }
+
+void recursion_sort(std::list<std::pair<int,int> >& o) 
+{
+    if (o.size() < 2) // Base case: stop recursion if the list has 0 or 1 elements
+        return;
+        
+    recursion_sort_helper(o, o.begin());
+}
+
 int check_sort(std::list<int> &o)
 {
     std::list<int>::iterator it = o.begin();
@@ -102,9 +111,6 @@ int check_sort(std::list<int> &o)
     return 1;
 }
 
-void recursion_sort(std::list<std::pair<int,int> >& o) {
-    recursion_sort_helper(o, o.begin());
-}
 
 int main(int argc, char *argv[]) 
 {
@@ -134,7 +140,8 @@ int main(int argc, char *argv[])
             lkbar.push_back(it3->second);
             sghar.push_back(it3->first);
         }
-        //step 4 
+        //step 4
+
         //now we have two lists of the same size lkbar == sorted numbers and sghar == unsorted numbers
         if(*(lkbar.begin()) >= *(sghar.begin()))
         {
@@ -142,22 +149,10 @@ int main(int argc, char *argv[])
             sghar.pop_front();
         }
         //step 5 : generate the order  of the jacob numbers based on the unsorded list ' s size
-        std::list<int>::iterator it2 = sghar.begin();
-        while(it2 != sghar.end())
-        {
-            std::list<int>::iterator it4 = lkbar.begin();
-            while(it4 != lkbar.end())
-            {
-                if(*it2 < *it4)
-                {
-                    lkbar.insert(it4,*it2);
-                    break;
-                }
-                it4++;
-            }
-            it2++;
-        }
-
+        
+        sghar.sort();
+        lkbar.merge(sghar);
+        sghar.sort();
         //step 6 : push the strugller to it s right place
         //step 7 : print the result       
         it = lkbar.begin();
@@ -169,14 +164,14 @@ int main(int argc, char *argv[])
             it++;
         }
 
-        // std::cout<<"sghar : "<<std::endl;
-        // std::cout << "--------"<<std::endl;
-        // it = sghar.begin();
-        // while(it != sghar.end())
-        // {
-        //     std::cout<<*it<<" ";
-        //     it++;
-        // }
+        std::cout<<"sghar : "<<std::endl;
+        std::cout << "--------"<<std::endl;
+        it = sghar.begin();
+        while(it != sghar.end())
+        {
+            std::cout<<*it<<" ";
+            it++;
+        }
         
     }
     catch (std::exception &e) 
