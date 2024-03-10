@@ -145,34 +145,55 @@ int main(int argc, char *argv[]) {
         std::list<int> sghar;
         std::list<std::pair<int, int> >::iterator it3;
 
-        for (it3 = pairs.begin(); it3 != pairs.end(); it3++) {
+        for (it3 = pairs.begin(); it3 != pairs.end(); it3++) 
+		{
             lkbar.push_back(it3->second);
             sghar.push_back(it3->first);
         }
 
-        if (sghar.front() <= lkbar.front()) {
+        if (sghar.front() <= lkbar.front()) 
+		{
             lkbar.push_front(sghar.front());
             sghar.pop_front();
         }
-
+		lkbar.sort();
        std::list<int> jacob_numbers = generateJacobsthalSequence(sghar.size());
-        std::list<int> index;
-    // std::list<int>::iterator it;
-
+	   std::list<int> index;
     for (it = jacob_numbers.begin(); it != jacob_numbers.end(); it++) {
         int current = *it;
         index.push_back(current);
-        for (int i = current - 1; i >= 1; i--) { // Corrected the indexing to start from current - 1
-            if (std::find(index.begin(), index.end(), i) == index.end()) { // Check if i is already in the index list
+        for (int i = current - 1; i >= 1; i--) 
+        {
+            if (std::find(index.begin(), index.end(), i) == index.end()) 
+            {
                 index.push_back(i);
             }
         }
     }
+	index.pop_front();
+	it = index.begin();
 
-        for (it = index.begin(); it != index.end(); it++) {
-            std::cout << *it << std::endl;
-        }
-    } catch (std::exception &e) {
+	std::list<int>::iterator ito = sghar.begin();
+	while(it != index.end()) 
+	{
+		it++;
+		std::advance(ito, *it);
+		std::list<int>::iterator it_lkbar = lkbar.begin();
+		while (it_lkbar != lkbar.end()) 
+		{
+			if (*it_lkbar > *ito) 
+			{
+				lkbar.insert(it_lkbar, *ito);
+				break;
+			}
+			it_lkbar++;
+		}
+	}
+	for(it = lkbar.begin(); it != lkbar.end(); it++)
+		std::cout << *it <<std::endl;
+
+    }
+    catch (std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }
