@@ -26,7 +26,8 @@ class PmergeMe {
         std::deque<std::pair<int, int> > pmergew(const std::deque<int>& numbers);
         //getters
         std::vector<int> get_numList();
-        void get_strugler();
+        void set_strugler();
+        int get_strugler();
         
         class NotANumber : public std::exception
         {

@@ -95,15 +95,19 @@ std::vector<int> generateJacobsthalSequence(int n) {
     return jacob_numbers;
 }
 
-void PmergeMe::get_strugler() 
+void PmergeMe::set_strugler() 
 {
     std::vector<int>::iterator it = this->numList.begin();
     if (this->numList.size() % 2 != 0) {
         strugler = *it;
 		//pop
 		this->numList.erase(it);
-        std::cout << "strugler " << strugler << std::endl;
     }
+
+}
+int PmergeMe::get_strugler()
+{
+	return this->strugler;
 }
 
 std::vector<int> PmergeMe::get_numList() {
@@ -138,10 +142,10 @@ for (std::vector<int>::const_iterator it = o.begin(); it != o.end(); it++)
 int main(int argc, char *argv[]) 
 {
     try {
+
         PmergeMe pmergeMe(argc, argv);
 
-        pmergeMe.get_strugler();
-		
+        pmergeMe.set_strugler();
         std::vector<std::pair<int, int> > pairs = pmergeMe.pmerge(pmergeMe.get_numList());
         std::vector<int> lkbar;
         std::vector<int> sghar;
@@ -183,6 +187,13 @@ int main(int argc, char *argv[])
                 lkbar.insert(insertPos, sgharElement);
             }
         }
+		if(pmergeMe.get_strugler() != 0)
+		{
+			lkbar.insert(std::lower_bound(lkbar.begin(), lkbar.end(), pmergeMe.get_strugler()), pmergeMe.get_strugler());
+		}
+		
+		print_list2(lkbar);
+	
     }
     catch (std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
