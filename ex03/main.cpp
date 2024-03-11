@@ -1,29 +1,7 @@
-#include <iostream>
-#include <list>
-#include <cstdlib>
 
-class NotANumber : public std::exception {
-public:
-    const char *what() const throw() {
-        return "Error: Not a number.";
-    }
-};
+#include "PmergeMe.hpp"
 
-class BadParameters : public std::exception {
-public:
-    const char *what() const throw() {
-        return "Bad Parameters: Usage: ./PmergeMe <number1> <number2> ... <numberN>";
-    }
-};
-
-class Sorted : public std::exception {
-public:
-    const char *what() const throw() {
-        return "The list is already sorted";
-    }
-};
-
-bool isDigit(const std::string &str) {
+bool PmergeMe::isDigit(const std::string &str) {
     size_t start = (str[0] == '-' && str[1]) ? 1 : 0;
     for (size_t i = start; i < str.length(); ++i) {
         if (!isdigit(str[i]))
@@ -31,68 +9,61 @@ bool isDigit(const std::string &str) {
     }
     return true;
 }
-
-std::list<int> parseArguments(int argc, char *argv[]) {
-    std::list<int> numList;
-
+void print_list2(const std::vector<int>& o);
+PmergeMe::PmergeMe(int argc, char *argv[]) {
+    if (argc <= 1)
+        throw BadParameters();
+    
     for (int i = 1; i < argc; ++i) {
-        if (!isDigit(argv[i]))
+        if (!this->isDigit(argv[i]))
             throw NotANumber();
-        numList.push_back(atoi(argv[i]));
+        numList.push_back(std::atoi(argv[i]));
     }
-
-    return numList;
+    if (this->check_sorted(numList))
+        throw Sorted();
 }
 
-std::list<std::pair<int, int> > pmerge(const std::list<int>& numbers) {
-    std::list<std::pair<int, int> > res;
+PmergeMe::~PmergeMe() {}
 
-    std::list<int>::const_iterator it = numbers.begin();
+const char *PmergeMe::NotANumber::what() const throw() {
+    return "Not a number";
+}
+
+const char *PmergeMe::BadParameters::what() const throw() {
+    return "Bad parameters";
+}
+
+const char *PmergeMe::Sorted::what() const throw() {
+    return "Already sorted";
+}
+
+std::vector<std::pair<int, int> > PmergeMe::pmerge(const std::vector<int>& numbers) 
+{
+    std::vector<std::pair<int, int> > res;
+    std::vector<int>::const_iterator it = numbers.begin();
     while (it != numbers.end()) {
-        std::list<int>::const_iterator next_it = it;
-        if (++next_it != numbers.end()) {
-            if (*it > *next_it) {
-                res.push_back(std::make_pair(*next_it, *it));
-            } else {
-                res.push_back(std::make_pair(*it, *next_it));
-            }
-        }
+        if (*it > *std::next(it))
+            res.push_back(std::make_pair(*std::next(it), *it));
+        else
+            res.push_back(std::make_pair(*it, *std::next(it)));
         std::advance(it, 2);
     }
-
     return res;
 }
 
-void recursion_sort_helper(std::list<std::pair<int,int> >& o, std::list<std::pair<int,int> >::iterator it) {
-    if (it == std::prev(o.end()))
-        return;
-
-    if (it->second > std::next(it)->second) {
-        std::swap(*it, *std::next(it));
-        recursion_sort_helper(o, std::next(it)); // Pass the next iterator
-    } else
-        recursion_sort_helper(o, std::next(it)); // Pass the next iterator
-}
-
-void recursion_sort(std::list<std::pair<int,int> >& o) {
-    if (o.size() < 2) // Base case: stop recursion if the list has 0 or 1 elements
-        return;
-
-    recursion_sort_helper(o, o.begin());
-}
-
-int check_sort(std::list<int> &o) {
-    std::list<int>::iterator it = o.begin();
-    while(it != std::prev(o.end())) {
-        if(*it > *std::next(it))
-            return 0;
+bool PmergeMe::check_sorted(const std::vector<int>& o) 
+{
+    std::vector<int>::const_iterator it = o.begin();
+    while (it != std::prev(o.end())) {
+        if (*it > *std::next(it))
+            return false;
         it++;
     }
-    return 1;
+    return true;
 }
 
-std::list<int> generateJacobsthalSequence(int n) {
-    std::list<int> jacob_numbers;
+std::vector<int> generateJacobsthalSequence(int n) {
+    std::vector<int> jacob_numbers;
     int a = 0;
     int b = 1;
     int c;
@@ -110,9 +81,12 @@ std::list<int> generateJacobsthalSequence(int n) {
         if (b >= n)
             break;
     }
-    if (n >= 2) {
-        jacob_numbers.pop_front();
-        jacob_numbers.pop_front();
+    if (n >= 2) 
+	{
+		std::vector<int>::iterator it = jacob_numbers.begin();
+		jacob_numbers.erase(it);
+		jacob_numbers.erase(it +1);
+
     }
     if (b >= n) {
         jacob_numbers.pop_back();
@@ -121,77 +95,94 @@ std::list<int> generateJacobsthalSequence(int n) {
     return jacob_numbers;
 }
 
-int main(int argc, char *argv[]) {
+void PmergeMe::get_strugler() 
+{
+    std::vector<int>::iterator it = this->numList.begin();
+    if (this->numList.size() % 2 != 0) {
+        strugler = *it;
+		//pop
+		this->numList.erase(it);
+        std::cout << "strugler " << strugler << std::endl;
+    }
+}
+
+std::vector<int> PmergeMe::get_numList() {
+    return this->numList;
+}
+
+void recursion_sort_helper(std::vector<std::pair<int,int> >& o, std::vector<std::pair<int,int> >::iterator it) {
+    if (it == std::prev(o.end()))
+        return;
+
+    if (it->second > std::next(it)->second) {
+        std::swap(*it, *std::next(it));
+        recursion_sort_helper(o, std::next(it));
+    }
+    else
+        recursion_sort_helper(o, std::next(it));
+}
+
+void recursion_sort(std::vector<std::pair<int,int> >& o) {
+    if (o.size() < 2)
+        return;
+
+    recursion_sort_helper(o, o.begin());
+}
+
+void print_list2(const std::vector<int>& o) 
+{
+for (std::vector<int>::const_iterator it = o.begin(); it != o.end(); it++)
+		std::cout << *it << " ";
+	std::cout << std::endl;
+}
+int main(int argc, char *argv[]) 
+{
     try {
-        if (argc <= 1)
-            throw BadParameters();
+        PmergeMe pmergeMe(argc, argv);
 
-        std::list<int> numbers = parseArguments(argc, argv);
-        if (check_sort(numbers) == 1)
-            throw Sorted();
+        pmergeMe.get_strugler();
+		
+        std::vector<std::pair<int, int> > pairs = pmergeMe.pmerge(pmergeMe.get_numList());
+        std::vector<int> lkbar;
+        std::vector<int> sghar;
+		recursion_sort(pairs);
 
-        int strugller = 0;
-        std::list<int> ::iterator it = numbers.begin();
-        if (numbers.size() % 2 != 0) {
-            strugller = *it;
-            numbers.pop_front();
-            std::cout << "strugller " << strugller << std::endl;
-        }
-
-        std::list<std::pair<int, int> > pairs = pmerge(numbers);
-        recursion_sort(pairs);
-
-        std::list<int> lkbar;
-        std::list<int> sghar;
-        std::list<std::pair<int, int> >::iterator it3;
-
-        for (it3 = pairs.begin(); it3 != pairs.end(); it3++) 
+		for (std::vector<std::pair<int, int> >::iterator it = pairs.begin(); it != pairs.end(); it++) 
 		{
-            lkbar.push_back(it3->second);
-            sghar.push_back(it3->first);
-        }
-
-        if (sghar.front() <= lkbar.front()) 
+			lkbar.push_back(it->second);
+			sghar.push_back(it->first);
+		}
+		std::sort(lkbar.begin(), lkbar.end());
+		if(sghar.front() > lkbar.front())
 		{
-            lkbar.push_front(sghar.front());
-            sghar.pop_front();
-        }
-		lkbar.sort();
-       std::list<int> jacob_numbers = generateJacobsthalSequence(sghar.size());
-	   std::list<int> index;
-    for (it = jacob_numbers.begin(); it != jacob_numbers.end(); it++) {
-        int current = *it;
-        index.push_back(current);
-        for (int i = current - 1; i >= 1; i--) 
-        {
-            if (std::find(index.begin(), index.end(), i) == index.end()) 
-            {
-                index.push_back(i);
+			lkbar[0] = sghar[0];
+			std::vector<int>::iterator it = sghar.begin();
+			sghar.erase(it);
+		}
+
+        std::sort(lkbar.begin(), lkbar.end());
+        std::vector<int> jacob_numbers = generateJacobsthalSequence(sghar.size());
+        std::vector<int> index;
+        
+        for (std::vector<int>::iterator it = jacob_numbers.begin(); it != jacob_numbers.end(); it++) {
+            int current = *it;
+            index.push_back(current);
+            for (int i = current - 1; i > 1; i--) {
+                if (std::find(index.begin(), index.end(), i) == index.end()) {
+                    index.push_back(i);
+                }
             }
         }
-    }
-	index.pop_front();
-	it = index.begin();
-
-	std::list<int>::iterator ito = sghar.begin();
-	while(it != index.end()) 
-	{
-		it++;
-		std::advance(ito, *it);
-		std::list<int>::iterator it_lkbar = lkbar.begin();
-		while (it_lkbar != lkbar.end()) 
-		{
-			if (*it_lkbar > *ito) 
-			{
-				lkbar.insert(it_lkbar, *ito);
-				break;
-			}
-			it_lkbar++;
-		}
-	}
-	for(it = lkbar.begin(); it != lkbar.end(); it++)
-		std::cout << *it <<std::endl;
-
+		lkbar.insert(std::lower_bound(lkbar.begin(), lkbar.end(), sghar[0]), sghar[0]);
+        for (std::vector<int>::iterator it = index.begin(); it != index.end(); it++) {
+            if ((size_t)*it < sghar.size()) {
+                int sgharIndex = *it;
+                int sgharElement = sghar[sgharIndex];
+                
+                std::vector<int>::iterator insertPos = std::lower_bound(lkbar.begin(), lkbar.end(), sgharElement);
+                lkbar.insert(insertPos, sgharElement);
+            }
+        }
     }
     catch (std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
