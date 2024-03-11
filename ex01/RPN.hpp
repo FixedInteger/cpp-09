@@ -4,11 +4,12 @@
 #include <iostream>
 #include <stack>
 #include <set>
+#include <list>
 #include <string>
 #include <sstream>
 #include <cctype>
 #include <stdexcept>
-// main container vector  , secondary container stack
+// main container list  , secondary container stack
 class RPN
 {
 public:
@@ -17,7 +18,7 @@ public:
     RPN(const RPN &other);
     RPN &operator=(const RPN &other);
     void check_expression();
-    int is_op(std::string op);
+    int is_op(const std::string &op);
     void pushOperand(double num);
     void pushOperator(const std::string& op);
     RPN(const std::string &numbers);
@@ -34,7 +35,7 @@ public:
     };
 
 private:
-    std::vector<std::string> data;
+    std::list<std::string> data;
     std::stack<double> stack;
 };
 

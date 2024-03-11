@@ -131,14 +131,21 @@ std::vector<std::pair<int, int> > PmergeMe::pmerge(const std::vector<int>& numbe
 {
     std::vector<std::pair<int, int> > res;
     std::vector<int>::const_iterator it = numbers.begin();
-    while (it != numbers.end()) {
-        if (*it > *std::next(it))
-            res.push_back(std::make_pair(*std::next(it), *it));
-        else
-            res.push_back(std::make_pair(*it, *std::next(it)));
-        std::advance(it, 2);
-    }
-    return res;
+        while (it != numbers.end()) {
+            std::vector<int>::const_iterator next = it;
+            ++next;
+            if (next != numbers.end()) {
+                if (*it > *next)
+                    res.push_back(std::make_pair(*next, *it));
+                else
+                    res.push_back(std::make_pair(*it, *next));
+                ++next;
+            } else {
+                res.push_back(std::make_pair(*it, *it)); // Manejo para el último elemento si la cantidad de elementos es impar.
+            }
+            it = next;
+        }
+        return res;
 }
 
 
@@ -258,16 +265,24 @@ std::deque<int> PmergeMe::generateJacobsthalSequenceD(int n)
 
 std::deque<std::pair<int, int> > PmergeMe::pmergew(const std::deque<int>& numbers) 
 {
-	std::deque<std::pair<int, int> > res;
-	std::deque<int>::const_iterator it = numbers.begin();
-	while (it != numbers.end()) {
-		if (*it > *std::next(it))
-			res.push_back(std::make_pair(*std::next(it), *it));
-		else
-			res.push_back(std::make_pair(*it, *std::next(it)));
-		std::advance(it, 2);
-	}
-	return res;
+    std::deque<std::pair<int, int> > res;
+    std::deque<int>::const_iterator it = numbers.begin();
+        while (it != numbers.end()) {
+            std::deque<int>::const_iterator next = it;
+            ++next;
+            if (next != numbers.end()) 
+            {
+                if (*it > *next)
+                    res.push_back(std::make_pair(*next, *it));
+                else
+                    res.push_back(std::make_pair(*it, *next));
+                ++next;
+            } 
+            else
+                res.push_back(std::make_pair(*it, *it));     
+            it = next;
+        }
+        return res;
 }
 
 void PmergeMe::sort_using_deque()
@@ -306,5 +321,5 @@ void PmergeMe::sort_using_deque()
 	if(this->get_strugler() != 0)
 		lkbar.insert(std::lower_bound(lkbar.begin(), lkbar.end(), this->get_strugler()), this->get_strugler());
     std::cout << "After sorting using deque: ";
-	print_list1(lkbar);
+	this->print_list1(lkbar);
 }
