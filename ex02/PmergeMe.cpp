@@ -11,16 +11,32 @@ bool PmergeMe::isDigit(const std::string &str) {
 void PmergeMe::set_strugler() 
 {
     std::vector<int>::iterator it = this->numList.begin();
-    if (this->numList.size() % 2 != 0) {
+    if (this->numList.size() % 2 != 0) 
+    {
         strugler = *it;
-		this->numList.erase(it);
-		this->numQueue.pop_front();
     }
 	else
 		strugler = 0;
 
 
 }
+
+// void PmergeMe::set_struggler2() 
+// {
+//     if (!this->numDeque.empty()) 
+//     {
+//         if (this->numDeque.size() % 2 != 0) 
+//         {
+//             this->struggler = this->numDeque.front();
+//             this->numDeque.pop_front();
+//         } 
+//         else 
+//         {
+//             this->struggler = 0;
+//         }
+//     }
+// }
+
 
 int PmergeMe::get_strugler()
 {
@@ -193,6 +209,7 @@ void PmergeMe::sort_using_vector()
         std::cout << "Before sorting using vector: ";
         this->print_list2(this->get_numList());
         this->set_strugler();
+        numList.erase(std::remove(numList.begin(), numList.end(), strugler), numList.end());
 	    std::vector<std::pair<int, int> > pairs = this->pmerge(this->get_numList());
         std::vector<int> lkbar;
         std::vector<int> sghar;
@@ -230,8 +247,8 @@ void PmergeMe::sort_using_vector()
                 lkbar.insert(insertPos, sgharElement);
             }
         }
-		if(this->get_strugler() != 0)
-			lkbar.insert(std::lower_bound(lkbar.begin(), lkbar.end(), this->get_strugler()), this->get_strugler());
+        if (this->get_strugler() != 0)
+            lkbar.insert(std::lower_bound(lkbar.begin(), lkbar.end(), strugler), strugler);
         std::cout << "After sorting using vector: ";
 		this->print_list2(lkbar);
 }
@@ -298,6 +315,7 @@ void PmergeMe::sort_using_deque()
     std::cout << "Before sorting using deque: ";
     this->print_list1(this->get_numQueue());
     this->set_strugler();
+    this->numQueue.erase(std::remove(this->numQueue.begin(), this->numQueue.end(), this->strugler), this->numQueue.end());
     std::deque<std::pair<int, int> > pairs = this->pmergew(this->numQueue);
     std::deque<int> lkbar;
     std::deque<int> sghar;
@@ -332,7 +350,7 @@ void PmergeMe::sort_using_deque()
         }
     }
     if (this->get_strugler() != 0)
-        lkbar.insert(std::lower_bound(lkbar.begin(), lkbar.end(), this->get_strugler()), this->get_strugler());
+        lkbar.insert(std::lower_bound(lkbar.begin(), lkbar.end(), strugler), strugler);
     std::cout << "After sorting using deque: ";
     this->print_list1(lkbar);
 }
