@@ -31,7 +31,7 @@ class PmergeMe {
         std::vector<int> get_numList();
         std::deque<int> get_numQueue();
         void print_list1(const std::deque<int>& o);
-        void print_list2(std::vector<int>& o);
+        void print_list2(const std::vector<int>& o);
 
 
         void set_strugler();
