@@ -20,6 +20,7 @@ class BitcoinExchange
         std::map<std::string, std::string> data;
         std::string value;
         std::string valid_date;
+        bool btc;
     public:
         BitcoinExchange();
         BitcoinExchange(const std::string &filename);

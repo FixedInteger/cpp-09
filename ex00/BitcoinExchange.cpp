@@ -7,6 +7,10 @@ BitcoinExchange::BitcoinExchange()
 BitcoinExchange::~BitcoinExchange()
 {
     this->value = "";
+    this->valid_date = "";
+    this->data.clear();
+    this->filename = "";
+    this->btc = false;
 }
 
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &other)
@@ -36,25 +40,48 @@ std::string trim(const std::string &str)
 void BitcoinExchange::check_date(const std::string &date)
 {
     if (date.empty())
+    {
         std::cout << "Date is empty" << std::endl;
+        return;
+    }
 
     std::stringstream ss(date);
-    trim(date);
-
-    std::string token;
-    size_t index = 0;
-    while (std::getline(ss, token, '-'))
-    {
-        token = trim(token);
-        if (!token.empty() && index < this->tokens.size())
-        {
-            this->tokens[index] = token;
-            index++;
-        }
-    }
+    std::string year, month, day;
     
-   
+    std::getline(ss, year, '-');
+    std::getline(ss, month, '-');
+    std::getline(ss, day, '-');
 
+    year = trim(year);
+    month = trim(month);
+    day = trim(day);
+
+    if (year.empty() || month.empty() || day.empty())
+    {
+        throw DateError();
+    }
+
+    if (year.size() != 4 || month.size() != 2 || day.size() != 2)
+    {
+        throw DateError();
+    }
+
+    if (year.find_first_not_of("0123456789") != std::string::npos || month.find_first_not_of("0123456789") != std::string::npos || day.find_first_not_of("0123456789") != std::string::npos)
+    {
+        throw DateError();
+    }
+
+    if (std::stoi(month) < 1 || std::stoi(month) > 12 || std::stoi(day) < 1 || std::stoi(day) > 31)
+    {
+        throw DateError();
+    }
+    else
+    {
+        this->tokens[0] = year;
+        this->tokens[1] = month;
+        this->tokens[2] = day;
+    
+    }
     
 }
 
@@ -98,14 +125,19 @@ void BitcoinExchange::check_data(const std::string &data)
     ss << data;
     float value;
     ss >> value;
-    if (ss.fail())
-        std::cout << "Error: " << "Not a number" << std::endl;
-    if(value < 0.0)
-        std::cout << "Error: " << "Not a positive number" << std::endl;
-    if(value > 1000.0)
+    if(data.empty())
+        std::cout << "Data is empty" << std::endl;
+    else if(data.find_last_not_of("0123456789.-") == std::string::npos)
+        std::cout << "Data is not a number" << std::endl;
+    else if(value < 0.0)
+        std::cout << "Error: " << "Not a positive number ." << std::endl;
+    else if(value > 1000.0)
         std::cout << "Error: " << "Too large a number" << std::endl;
     else
+    {
         this->value = data;
+        this->btc = true;
+    }
 }
 
 void BitcoinExchange::parseData2(const std::string &line)
@@ -122,6 +154,7 @@ void BitcoinExchange::parseData2(const std::string &line)
 
 void BitcoinExchange::parseData(const std::string &line)
 {
+    this->btc = false;
     std::stringstream ss(line); 
     std::string date;
     std::string data;
@@ -135,15 +168,14 @@ void BitcoinExchange::parseData(const std::string &line)
         std::cout << "Error: " <<"bad input:" << " " << line << std::endl;
     }
 }
-
 void BitcoinExchange::readData(const std::string &filename)
 {
     std::ifstream file;
-    file.open(filename, std::ios::in);
+    file.open(filename.c_str(), std::ios::in);
     if (!file.is_open())
     {
         file.clear();
-        file.open(filename, std::ios::out | std::ios::app);
+        file.open(filename.c_str(), std::ios::out | std::ios::app);
         if (!file.is_open())
         {
             throw std::runtime_error("Failed to create or open file.");
@@ -163,16 +195,34 @@ void BitcoinExchange::readData(const std::string &filename)
             parseData2(line2);
         }
         another_file.close();
-        if(this->value.empty() || this->valid_date.empty() || this->data.empty())
-            return;
-        else
+        if (btc == true)
         {
-            std::map<std::string, std::string>::iterator it = data.lower_bound(valid_date);
-            double result  = std::stod(it->second) * std::stod(value);
-            if(result > 1000.0)
-                std::cout << "Error: " << "Too large a number" << std::endl;
+            double closestResult = 0.0;
+            std::string closestDate;
+
+            std::map<std::string, std::string>::iterator it;
+            for (it = data.begin(); it != data.end(); ++it)
+            {
+                const std::string &date = it->first;
+                if (date < valid_date)
+                {
+                    double result = std::strtod(it->second.c_str(), NULL) * std::strtod(value.c_str(), NULL);
+                    if (result <= 1000.0 && (closestDate.empty() || date > closestDate))
+                    {
+                        closestDate = date;
+                        closestResult = result;
+                    }
+                }
+            }
+
+            if (!closestDate.empty())
+            {
+                std::cout << closestDate << " ===> " << value << " = " << closestResult << std::endl;
+            }
             else
-                std::cout << it->first << "===> " << value  << " = " << result << std::endl;
+            {
+                std::cout << "Error: No smaller date found" << std::endl;
+            }
         }
     }
 
