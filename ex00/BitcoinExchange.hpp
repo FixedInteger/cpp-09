@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <array>
+#include <queue>
 #include <map>
 #include <sstream>
 
@@ -14,7 +16,10 @@ class BitcoinExchange
     private:
         std::string filename;
         std::string date;
-        std::map<std::string, std::vector<std::string> > data;
+        std::array<std::string, 3> tokens;
+        std::map<std::string, std::string> data;
+        std::string value;
+        std::string valid_date;
     public:
         BitcoinExchange();
         BitcoinExchange(const std::string &filename);
@@ -24,6 +29,7 @@ class BitcoinExchange
         BitcoinExchange(const BitcoinExchange &other);
         void readData(const std::string &filename);
         void parseData(const std::string &line);
+        void parseData2(const std::string &line);
         void check_date(const std::string &date);
         void check_file(const std::string &filename);
         void check_data(const std::string &data);

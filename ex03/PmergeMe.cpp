@@ -293,7 +293,8 @@ void PmergeMe::sort_using_deque()
 	std::deque<int> lkbar;
 	std::deque<int> sghar;
 
-	for (std::deque<std::pair<int, int> >::iterator it = pairs.begin(); it != pairs.end(); it++) {
+	for (std::deque<std::pair<int, int> >::iterator it = pairs.begin(); it != pairs.end(); it++) 
+    {
 		lkbar.push_back(it->second);
 		sghar.push_back(it->first);
 	}
