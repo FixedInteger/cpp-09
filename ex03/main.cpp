@@ -7,11 +7,11 @@
 int main(int argc, char *argv[]) {
     try {
 
-        clock_t start_deque = clock();
         PmergeMe pmergeMe(argc, argv);
-        pmergeMe.set_strugler();
         size_t size = pmergeMe.get_numQueue().size();
+        clock_t start_deque = clock();
         pmergeMe.sort_using_deque();
+
         clock_t end_deque = clock();
         double duration_deque = (double)(end_deque - start_deque) / CLOCKS_PER_SEC * 1000000;
         std::cout << "Time to process a range of " << size <<" elements with std::deque : " << duration_deque << " microseconds" << std::endl;
