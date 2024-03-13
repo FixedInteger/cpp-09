@@ -6,6 +6,7 @@ BitcoinExchange::BitcoinExchange()
 
 BitcoinExchange::~BitcoinExchange()
 {
+    this->value = "";
 }
 
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &other)
@@ -38,6 +39,7 @@ void BitcoinExchange::check_date(const std::string &date)
         std::cout << "Date is empty" << std::endl;
 
     std::stringstream ss(date);
+    trim(date);
 
     std::string token;
     size_t index = 0;
@@ -50,24 +52,10 @@ void BitcoinExchange::check_date(const std::string &date)
             index++;
         }
     }
-    if (this->tokens.size() != 3)
-        std::cout << "Date is not in the correct format" << std::endl;
-    if (this->tokens[0].size() != 4 || this->tokens[1].size() != 2 || this->tokens[2].size() != 2)
-        std::cout << "Date is not in the correct format" << std::endl;
-    if(this->tokens[1] > "12" || this->tokens[2] > "31")
-        std::cout << "Date is not in the correct format" << std::endl;
-    if(this->tokens[1] < "01" || this->tokens[2] < "01")
-        std::cout << "Date is not in the correct format" << std::endl;
+    
+   
 
-    for (size_t i = 0; i < this->tokens.size(); ++i)
-    {
-        const std::string &t = this->tokens[i];
-        for (size_t j = 0; j < t.size(); j++)
-        {
-            if (!isdigit(t[j]))
-                std::cout << "Date is not in the correct format" << std::endl;
-        }
-    }
+    
 }
 
 void BitcoinExchange::check_file(const std::string &filename)
@@ -110,21 +98,22 @@ void BitcoinExchange::check_data(const std::string &data)
     ss << data;
     float value;
     ss >> value;
-
-    if (value < 0)
-        throw DataError();
     if (ss.fail())
-        throw DataError();
-    this->value = data;
+        std::cout << "Error: " << "Not a number" << std::endl;
+    if(value < 0.0)
+        std::cout << "Error: " << "Not a positive number" << std::endl;
+    if(value > 1000.0)
+        std::cout << "Error: " << "Too large a number" << std::endl;
+    else
+        this->value = data;
 }
 
 void BitcoinExchange::parseData2(const std::string &line)
 {
     // std::cout << "Parsing data: " << line << std::endl;
-    std::stringstream ss(line); // Initialize stringstream with the line
+    std::stringstream ss(line); 
     std::string date;
     std::string data;
-    // Read both date and data in the same loop iteration
     while (std::getline(ss, date, ',') && std::getline(ss, data, ','))
     {
         this->data[date] = data;
@@ -133,32 +122,28 @@ void BitcoinExchange::parseData2(const std::string &line)
 
 void BitcoinExchange::parseData(const std::string &line)
 {
-    // std::cout << "Parsing data: " << line << std::endl;
-    std::stringstream ss(line); // Initialize stringstream with the line
+    std::stringstream ss(line); 
     std::string date;
     std::string data;
-    // Read both date and data in the same loop iteration
     while (std::getline(ss, date, '|') && std::getline(ss, data, '|'))
     {
         check_date(date);
         check_data(data);
     }
-    if (date.empty())
-        throw DateEmpty();
-    if (data.empty())
-        throw DataError();
+    if(line.find_first_not_of(date) == std::string::npos || line.find_first_not_of(data) == std::string::npos || line.find_first_not_of("| ") == std::string::npos)
+    {
+        std::cout << "Error: " <<"bad input:" << " " << line << std::endl;
+    }
 }
 
 void BitcoinExchange::readData(const std::string &filename)
 {
     std::ifstream file;
     file.open(filename, std::ios::in);
-
-    // Check if the file doesn't exist, create it
     if (!file.is_open())
     {
-        file.clear(); // Clear the error state
-        file.open(filename, std::ios::out | std::ios::app); // Open in append mode
+        file.clear();
+        file.open(filename, std::ios::out | std::ios::app);
         if (!file.is_open())
         {
             throw std::runtime_error("Failed to create or open file.");
@@ -178,14 +163,17 @@ void BitcoinExchange::readData(const std::string &filename)
             parseData2(line2);
         }
         another_file.close();
-        std::map<std::string, std::string>::iterator it = data.lower_bound(valid_date);
-        double result  = std::stod(it->second) * std::stod(value);
-        if(result < 0.0)
-            std::cout << "Error: " << "Not a positive number" << std::endl;
-        if(result > 1000.0)
-            std::cout << "Error: " << "Too large a number" << std::endl;
+        if(this->value.empty() || this->valid_date.empty() || this->data.empty())
+            return;
         else
-            std::cout << it->first << "===> " << value  << " = " << result << std::endl;
+        {
+            std::map<std::string, std::string>::iterator it = data.lower_bound(valid_date);
+            double result  = std::stod(it->second) * std::stod(value);
+            if(result > 1000.0)
+                std::cout << "Error: " << "Too large a number" << std::endl;
+            else
+                std::cout << it->first << "===> " << value  << " = " << result << std::endl;
+        }
     }
 
     file.close();
