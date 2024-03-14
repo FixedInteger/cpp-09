@@ -186,52 +186,45 @@ std::vector<std::pair<int, int> > PmergeMe::pmerge(const std::vector<int>& numbe
 }
 
 
-void recursion_sort_helper(std::vector<std::pair<int,int> >& o, std::vector<std::pair<int,int> >::iterator it) 
-{
-    if (it == std::prev(o.end()))
-        return;
-
-    if (it->second > std::next(it)->second) 
-    {
-        std::swap(*it, *std::next(it));
-        recursion_sort_helper(o, o.begin()); 
-        recursion_sort_helper(o, std::next(it)); // Pass the next iterator
-    } 
-    else
-        recursion_sort_helper(o, std::next(it));
-        recursion_sort_helper(o, std::next(it)); // Pass the next iterator
+void recursion_sort_helper(std::vector<std::pair<int,int> >& o) {
+    bool swapped = true;
+    while (swapped) {
+        swapped = false;
+        for (std::vector<std::pair<int,int> >::iterator it = o.begin(); it != o.end(); ++it) {
+            if (it != o.end() && std::next(it) != o.end() && it->second > std::next(it)->second) {
+                std::swap(*it, *std::next(it));
+                swapped = true;
+            }
+        }
+    }
 }
-
 void recursion_sort(std::vector<std::pair<int,int> >& o) 
 {
     if (o.size() < 2) // Base case: stop recursion if the list has 0 or 1 elements
         return;
 
-    recursion_sort_helper(o, o.begin());
+    recursion_sort_helper(o);
+
 }
 
-void recursion_sort_helper2(std::deque<std::pair<int,int> >& o, std::deque<std::pair<int,int> >::iterator it) 
-{
-    if (it == std::prev(o.end()))
-        return;
-
-    if (it->second > std::next(it)->second) 
-    {
-        std::swap(*it, *std::next(it));
-        recursion_sort_helper2(o, o.begin());
-        recursion_sort_helper2(o, std::next(it)); // Pass
+void recursion_sort_helper2(std::deque<std::pair<int,int> >& o) {
+    bool swapped = true;
+    while (swapped) {
+        swapped = false;
+        for (std::deque<std::pair<int,int> >::iterator it = o.begin(); it != o.end(); ++it) {
+            if (it != o.end() && std::next(it) != o.end() && it->second > std::next(it)->second) {
+                std::swap(*it, *std::next(it));
+                swapped = true;
+            }
+        }
     }
-    else
-        recursion_sort_helper2(o, std::next(it));
-        recursion_sort_helper2(o, std::next(it)); // Pass
 }
 
 void recursion_sort2(std::deque<std::pair<int,int> >& o) 
 {
     if (o.size() < 2) // Base case: stop recursion if the list has 0 or 1 elements
         return;
-
-    recursion_sort_helper2(o, o.begin());
+    recursion_sort_helper2(o);
 }
 
 void PmergeMe::sort_using_vector() 
