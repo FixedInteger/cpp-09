@@ -30,7 +30,8 @@ PmergeMe::PmergeMe(int argc, char *argv[]) {
     if (argc <= 1)
         throw BadParameters();
 
-    for (int i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) 
+    {
         std::string str = argv[i];
         if (!isDigit(str))
             throw NotANumber();
@@ -64,7 +65,8 @@ PmergeMe::PmergeMe(const PmergeMe &p)
 //assignment operator
 PmergeMe &PmergeMe::operator=(const PmergeMe &p) 
 {
-    if (this != &p) {
+    if (this != &p) 
+    {
         numList = p.numList;
         numQueue = p.numQueue;
         res = p.res;
@@ -186,30 +188,33 @@ std::vector<std::pair<int, int> > PmergeMe::pmerge(const std::vector<int>& numbe
 }
 
 
-void recursion_sort_helper(std::vector<std::pair<int,int> >& o) {
+void recursion_sort_helper(std::vector<std::pair<int,int> >& o) 
+{
     bool swapped = true;
-    while (swapped) {
+    while (swapped) 
+    {
         swapped = false;
-        for (std::vector<std::pair<int,int> >::iterator it = o.begin(); it != o.end(); ++it) {
+        for (std::vector<std::pair<int,int> >::iterator it = o.begin(); it != o.end(); ++it) 
+        {
             if (it != o.end() && std::next(it) != o.end() && it->second > std::next(it)->second) {
-                std::swap(*it, *std::next(it));
-                swapped = true;
+               std::swap(*it, *std::next(it));
+               swapped = true;
             }
         }
     }
 }
+
 void recursion_sort(std::vector<std::pair<int,int> >& o) 
 {
-    if (o.size() < 2) // Base case: stop recursion if the list has 0 or 1 elements
+    if (o.size() < 2)
         return;
-
     recursion_sort_helper(o);
-
 }
 
 void recursion_sort_helper2(std::deque<std::pair<int,int> >& o) {
     bool swapped = true;
-    while (swapped) {
+    while (swapped) 
+    {
         swapped = false;
         for (std::deque<std::pair<int,int> >::iterator it = o.begin(); it != o.end(); ++it) {
             if (it != o.end() && std::next(it) != o.end() && it->second > std::next(it)->second) {
@@ -222,7 +227,7 @@ void recursion_sort_helper2(std::deque<std::pair<int,int> >& o) {
 
 void recursion_sort2(std::deque<std::pair<int,int> >& o) 
 {
-    if (o.size() < 2) // Base case: stop recursion if the list has 0 or 1 elements
+    if (o.size() < 2) 
         return;
     recursion_sort_helper2(o);
 }
@@ -341,11 +346,13 @@ void PmergeMe::sort_using_deque()
     recursion_sort2(pairs);
     std::deque<int> lkbar;
     std::deque<int> sghar;
-    for (std::deque<std::pair<int, int> >::iterator it = pairs.begin(); it != pairs.end(); it++) {
+    for (std::deque<std::pair<int, int> >::iterator it = pairs.begin(); it != pairs.end(); it++) 
+    {
         lkbar.push_back(it->second);
         sghar.push_back(it->first);
     }
-    if (!sghar.empty() && !lkbar.empty() && sghar.front() > lkbar.front()) {
+    if (!sghar.empty() && !lkbar.empty() && sghar.front() > lkbar.front()) 
+    {
         lkbar[0] = sghar[0];
         sghar.pop_front();
     }
@@ -363,8 +370,10 @@ void PmergeMe::sort_using_deque()
     }
     if (!sghar.empty())
         lkbar.insert(std::lower_bound(lkbar.begin(), lkbar.end(), sghar[0]), sghar[0]);
-    for (std::deque<int>::iterator it = index.begin(); it != index.end(); it++) {
-        if ((size_t)*it < sghar.size()) {
+    for (std::deque<int>::iterator it = index.begin(); it != index.end(); it++) 
+    {
+        if ((size_t)*it < sghar.size()) 
+        {
             int sgharIndex = *it;
             int sgharElement = sghar[sgharIndex];
             std::deque<int>::iterator insertPos = std::lower_bound(lkbar.begin(), lkbar.end(), sgharElement);

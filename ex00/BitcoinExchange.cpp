@@ -133,6 +133,8 @@ void BitcoinExchange::check_data(const std::string &data)
         std::cout << "Error: " << "Not a positive number ." << std::endl;
     else if(value > 1000.0)
         std::cout << "Error: " << "Too large a number" << std::endl;
+    else if(value == 0.0 && (data.find_first_not_of("0.") == std::string::npos))
+        std::cout << "Error: " << "invalid Data " << std::endl;
     else
     {
         this->value = data;
@@ -142,7 +144,6 @@ void BitcoinExchange::check_data(const std::string &data)
 
 void BitcoinExchange::parseData2(const std::string &line)
 {
-    // std::cout << "Parsing data: " << line << std::endl;
     std::stringstream ss(line); 
     std::string date;
     std::string data;
@@ -150,6 +151,22 @@ void BitcoinExchange::parseData2(const std::string &line)
     {
         this->data[date] = data;
     }
+}
+
+
+void BitcoinExchange::check_first_line( std::string &line)
+{
+    std::stringstream ss(line);
+    std::string date;
+    std::string data;
+    std::getline(ss, date, '|');
+    std::getline(ss, data, '|');
+    date = trim(date);
+    data = trim(data);
+    std::cout << date << " " << data << std::endl;
+    if(date != "date" || data != "value")
+        throw DateEmpty();
+    line.erase(0,line.find("\n")+1);
 }
 
 void BitcoinExchange::parseData(const std::string &line)
@@ -189,6 +206,7 @@ void BitcoinExchange::readData(const std::string &filename)
     std::string line;
     while (std::getline(file, line))
     {
+        check_first_line(line);
         parseData(line);
         std::ifstream another_file;
         another_file.open("data.csv", std::ios::in);
@@ -221,13 +239,9 @@ void BitcoinExchange::readData(const std::string &filename)
             }
 
             if (!closestDate.empty())
-            {
                 std::cout << closestDate << " ===> " << value << " = " << closestResult << std::endl;
-            }
             else
-            {
                 std::cout << "No data" << std::endl;
-            }
         }
     }
 
