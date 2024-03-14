@@ -173,7 +173,6 @@ std::string BitcoinExchange::check_first_line(std::string &line, std::ifstream &
     std::getline(ss, data, '|');
     data = trim(data);
     date = trim(date);
-    // std::cout << "date" << date << " " << "value" << data << std::endl;
     if(data != "value" || date != "date")
         throw DataError();
     return temp;
@@ -204,7 +203,7 @@ void BitcoinExchange::readData(const std::string &filename)
             parseData2(line2);
         }
         another_file.close();
-        if (btc == true)
+        if (btc == true && !value.empty() && !valid_date.empty() && !data.empty())
         {
             double closestResult = 0.0;
             std::string closestDate;
