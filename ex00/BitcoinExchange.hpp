@@ -29,12 +29,12 @@ class BitcoinExchange
         ~BitcoinExchange();
         BitcoinExchange(const BitcoinExchange &other);
         void readData(const std::string &filename);
-        void parseData(const std::string &line);
+        void parseData( std::string &line);
         void parseData2(const std::string &line);
         void check_date(const std::string &date);
         void check_file(const std::string &filename);
         void check_data(const std::string &data);
-         void check_first_line( std::string &line);
+        std::string check_first_line( std::string &line, std::ifstream &file);
 
         class FileError : public std::exception
         {

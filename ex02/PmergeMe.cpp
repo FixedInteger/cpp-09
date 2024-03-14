@@ -1,6 +1,7 @@
 #include "PmergeMe.hpp"
 // set up functions
-bool PmergeMe::isDigit(const std::string &str) {
+bool PmergeMe::isDigit(const std::string &str) 
+{
     size_t start = (str[0] == '-' && str[1]) ? 1 : 0;
     for (size_t i = start; i < str.length(); ++i) {
         if (!isdigit(str[i]))
@@ -26,7 +27,8 @@ int PmergeMe::get_strugler()
 	return this->strugler;
 }
 
-PmergeMe::PmergeMe(int argc, char *argv[]) {
+PmergeMe::PmergeMe(int argc, char *argv[]) 
+{
     if (argc <= 1)
         throw BadParameters();
 
@@ -103,7 +105,8 @@ const char *PmergeMe::Sorted::what() const throw()
 /*----------------------- vector -----------------*/
 
 
-std::vector<int> PmergeMe::generateJacobsthalSequence(int n) {
+std::vector<int> PmergeMe::generateJacobsthalSequence(int n) 
+{
     std::vector<int> jacob_numbers;
     int a = 0;
     int b = 1;
@@ -134,7 +137,8 @@ std::vector<int> PmergeMe::generateJacobsthalSequence(int n) {
     return jacob_numbers;
 }
 
-std::deque<int> PmergeMe::generateJacobsthalSequenceD(int n) {
+std::deque<int> PmergeMe::generateJacobsthalSequenceD(int n) 
+{
     std::deque<int> jacob_numbers;
     int a = 0;
     int b = 1;
@@ -147,7 +151,7 @@ std::deque<int> PmergeMe::generateJacobsthalSequenceD(int n) {
         else {
             c = a;
             a = b;
-            b = (2 *c)+b; // Fixing the calculation of Jacobsthal sequence
+            b = (2 *c)+b;
             jacob_numbers.push_back(b);
         }
         if (b >= n)
