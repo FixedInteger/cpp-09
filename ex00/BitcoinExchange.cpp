@@ -70,7 +70,6 @@ void BitcoinExchange::check_date(const std::string &date)
         this->tokens[0] = year;
         this->tokens[1] = month;
         this->tokens[2] = day;
-        this->btc = true;
     }
     
 }
@@ -119,7 +118,7 @@ void BitcoinExchange::check_data(const std::string &data)
     temp.erase(0, temp.find_first_not_of(" \t\r\n"));
     if(temp.empty())
         std::cout << "Data is empty" << std::endl;
-    else if (temp.find_first_not_of("0123456789.") != std::string::npos)
+    else if (temp.find_first_not_of("0123456789.-") != std::string::npos)
         std::cout << "Error : Not a Number" <<std::endl;
     else if (value < 0.0)
         std::cout << "Error : Not a positive Number" <<std::endl;
@@ -141,6 +140,7 @@ void BitcoinExchange::parseData2(const std::string &line)
     {
         this->data[date] = data;
     }
+   
 }
 
 
@@ -158,14 +158,14 @@ void BitcoinExchange::parseData(std::string &line)
     if(data.empty() || date.empty())
     {
         std::cout << "Error: " <<"bad input:" << " " << line << std::endl;
+        return;
     }
 }
 
-std::string BitcoinExchange::check_first_line(std::string &line, std::ifstream &file)
+std::string BitcoinExchange::check_first_line( std::ifstream &file)
 {
-    std::getline(file, line);
-    std::string temp = line;
-
+    std::string temp;
+    std::getline(file, temp);
     std::string data;
     std::string date;
     std::stringstream ss(temp);
@@ -175,6 +175,7 @@ std::string BitcoinExchange::check_first_line(std::string &line, std::ifstream &
     date = trim(date);
     if(data != "value" || date != "date")
         throw DataError();
+    temp = temp.erase(0, temp.find_first_not_of(" \t\r\n"));
     return temp;
 }
 void BitcoinExchange::readData(const std::string &filename)
@@ -189,13 +190,12 @@ void BitcoinExchange::readData(const std::string &filename)
     if (!file.is_open())
         throw std::runtime_error("Failed to open file.");
     std::string line;
-    line = check_first_line(line , file);
+    line = check_first_line(file);
     while (std::getline(file, line))
     {
         parseData(line);
         std::ifstream another_file;
         another_file.open("data.csv", std::ios::in);
-
         std::string line2;
         valid_date = tokens[0] + "-" + tokens[1] + "-" + tokens[2];
         while (std::getline(another_file, line2))
@@ -203,29 +203,20 @@ void BitcoinExchange::readData(const std::string &filename)
             parseData2(line2);
         }
         another_file.close();
-        if (btc == true && !value.empty() && !valid_date.empty() && !data.empty())
+        if (btc == true )
         {
             double closestResult = 0.0;
             std::string closestDate;
 
-            std::map<std::string, std::string>::iterator it;
-            for (it = data.begin(); it != data.end(); ++it)
+            std::map<std::string, std::string>::iterator it = data.lower_bound(valid_date);
+            if (it != data.end())
             {
-                const std::string &date = it->first;
-                if (date < valid_date)
-                {
-                    double result = std::strtod(it->second.c_str(), NULL) * std::strtod(value.c_str(), NULL);
-                    if (result <= 1000.0 && (closestDate.empty() || date > closestDate))
-                    {
-                        closestDate = date;
-                        closestResult = result;
-                    }
-                }
+                closestDate = it->first;
+                closestResult = std::stod(it->second) * std::stod(value);
             }
-
             if (!closestDate.empty())
-                std::cout << closestDate << " ===> " << value << " = " << closestResult << std::endl;
-            if(this->btc == true && closestDate.empty())
+                std::cout << valid_date << " ===> " << value << " = " << closestResult << std::endl;
+            if(this->btc == true && closestDate.empty() && !data.empty())
                 std::cout << "No data " <<std::endl;
         }
     }

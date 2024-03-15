@@ -34,7 +34,7 @@ class BitcoinExchange
         void check_date(const std::string &date);
         void check_file(const std::string &filename);
         void check_data(const std::string &data);
-        std::string check_first_line( std::string &line, std::ifstream &file);
+        std::string check_first_line(std::ifstream &file);
 
         class FileError : public std::exception
         {

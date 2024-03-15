@@ -36,7 +36,7 @@ void RPN::pushOperand(double num)
 
 void RPN::pushOperator(const std::string& op) 
 {
-    if (stack.size() < 2 && (op != "+" && op != "-" && op != "*" && op != "/"))
+    if (stack.size() < 2 )
         throw std::runtime_error("Invalid expression");
     double operand2 = stack.top();
     stack.pop();
@@ -49,7 +49,8 @@ void RPN::pushOperator(const std::string& op)
         result = operand1 - operand2;
     else if (op == "*")
         result = operand1 * operand2;
-    else if (op == "/") {
+    else if (op == "/") 
+    {
         if (operand2 == 0)
             throw std::runtime_error("Division by zero");
         result = operand1 / operand2;
@@ -112,9 +113,9 @@ void RPN::calculate()
         if ((std::isdigit(token[0]) || (token[0] == '-' && std::isdigit(token[1]))) ) 
         {
             double num = atof(token.c_str());
-            if(num > 2147483647 || num < -2147483648)
+            if(num < -2147483648)
                 throw std::runtime_error("Overflow");
-            else if(num > 10.0)
+            else if(num >= 10.0)
                 throw std::runtime_error("Overflow");
             stack.push(num);
         } 
