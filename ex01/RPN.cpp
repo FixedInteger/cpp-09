@@ -36,7 +36,7 @@ void RPN::pushOperand(double num)
 
 void RPN::pushOperator(const std::string& op) 
 {
-    if (stack.size() < 2 )
+    if (stack.size() < 2)
         throw std::runtime_error("Invalid expression");
     double operand2 = stack.top();
     stack.pop();
@@ -106,33 +106,33 @@ void RPN::calculate()
     try
     {
         while (it != data.end()) 
-    {
-        const std::string& token = *it;
-        if(token.size() > 1  && !std::isdigit(token[1]) && token[0] != '-')
-            throw std::runtime_error("Invalid expression");
-        if ((std::isdigit(token[0]) || (token[0] == '-' && std::isdigit(token[1]))) ) 
         {
-            double num = atof(token.c_str());
-            if(num < -2147483648)
-                throw std::runtime_error("Overflow");
-            else if(num >= 10.0)
-                throw std::runtime_error("Overflow");
-            stack.push(num);
-        } 
-        else 
-        {
-            try 
+            const std::string& token = *it;
+            if(token.size() > 1  && !std::isdigit(token[1]) && token[0] != '-')
+                throw std::runtime_error("Invalid expression");
+            if ((std::isdigit(token[0]) || (token[0] == '-' && std::isdigit(token[1]))) ) 
             {
-                pushOperator(token);
+                double num = atof(token.c_str());
+                if(num < -2147483648)
+                    throw std::runtime_error("Overflow");
+                else if(num >= 10.0)
+                    throw std::runtime_error("Overflow");
+                stack.push(num);
             } 
-            catch(const std::runtime_error& e) 
+            else 
             {
-                std::cerr << "Error: " << e.what() << std::endl;
-                return;
+                try 
+                {
+                    pushOperator(token);
+                } 
+                catch(const std::runtime_error& e) 
+                {
+                    std::cerr << "Error: " << e.what() << std::endl;
+                    return;
+                }
             }
+            ++it;
         }
-        ++it;
-    }
     if (!stack.empty())
     {
         double result = stack.top();

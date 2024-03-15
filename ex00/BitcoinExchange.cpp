@@ -126,8 +126,11 @@ void BitcoinExchange::check_data(const std::string &data)
         std::cout << "Error : Too large A number" <<std::endl;
     else
     {
-        this->value = data;
-        this->btc = true;
+        if(!(this->tokens[0].empty() || this->tokens[1].empty() || this->tokens[2].empty()))
+        {
+            this->value = data;
+            this->btc = true;
+        }
     }
 }
 
@@ -216,7 +219,7 @@ void BitcoinExchange::readData(const std::string &filename)
             }
             if (!closestDate.empty())
                 std::cout << valid_date << " ===> " << value << " = " << closestResult << std::endl;
-            if(this->btc == true && closestDate.empty() && !data.empty())
+            if((this->btc = true) && (valid_date.empty() || value.empty()))
                 std::cout << "No data " <<std::endl;
         }
     }
